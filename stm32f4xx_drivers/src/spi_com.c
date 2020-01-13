@@ -45,7 +45,7 @@ void SPI2_Init(void)
 	SPI2_Handle.SPIConfig.SPI_BusConfig = SPI_CONFIG_FD;//0x00
 	SPI2_Handle.SPIConfig. SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;//0x01
 	SPI2_Handle.SPIConfig.SPI_SclkSpeed = SPI_SCLK_SPEED_DIV8;//0x03
-	SPI2_Handle.SPIConfig.SPI_DFF = SPI_DFF_8BIT;//0x01
+	SPI2_Handle.SPIConfig.SPI_DFF = SPI_DFF_16BIT;//0x01
 	SPI2_Handle.SPIConfig.SPI_CPOL = SPI_CPOL_HIGH;//0x01
 	SPI2_Handle.SPIConfig.SPI_CPHA = SPI_CPHA_HIGH;//0x01
 	SPI2_Handle.SPIConfig.SPI_SSM = SPI_SSM_SOFTWARE;//0x01
@@ -102,7 +102,7 @@ void EXTI0_IRQHandler(void)
 	GPIO_ReadHandling(GPIO_PIN_0);
 
 	SPI_PeripheralControl(SPI2,ENABLE); // SPE (SPI ENABLE) bit in CR1 register
-	char user_data[] = "1234";
+	char user_data[] = "12345678";
 	SPI_SendData(SPI2,(uint8_t*)user_data,strlen(user_data));
 
 	//SPI_PeripheralControl(SPI2,DISABLE); // DISBALE the SPE bit

@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../drivers/src/stm32f407xx_gpio_driver.c \
+../drivers/src/stm32f407xx_i2c_driver.c \
 ../drivers/src/stm32f407xx_spi_driver.c 
 
 OBJS += \
 ./drivers/src/stm32f407xx_gpio_driver.o \
+./drivers/src/stm32f407xx_i2c_driver.o \
 ./drivers/src/stm32f407xx_spi_driver.o 
 
 C_DEPS += \
 ./drivers/src/stm32f407xx_gpio_driver.d \
+./drivers/src/stm32f407xx_i2c_driver.d \
 ./drivers/src/stm32f407xx_spi_driver.d 
 
 

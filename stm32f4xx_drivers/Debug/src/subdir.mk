@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/spi_com.c 
+../src/arduino_spi_com.c 
 
 OBJS += \
-./src/spi_com.o 
+./src/arduino_spi_com.o 
 
 C_DEPS += \
-./src/spi_com.d 
+./src/arduino_spi_com.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

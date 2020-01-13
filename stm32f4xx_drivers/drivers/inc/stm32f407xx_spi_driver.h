@@ -32,6 +32,7 @@ typedef struct
 {
 	SPI_RegDef_t *pSPIx;
 	SPI_Config_t SPIConfig;
+	//For interrupt base data transfer
 	uint8_t	*pTxBuffer;
 	uint8_t	*pRxBuffer;
 	uint32_t Txlen;
@@ -109,6 +110,12 @@ typedef struct
 #define SPI_READY							0
 #define SPI_BUSY_IN_RX						1
 #define SPI_BUSY_IN_TX						2
+
+//spi application event
+
+#define SPI_EVENT_TX_CMPLT					1
+#define SPI_EVENT_RX_CMPLT					2
+#define SPI_EVENT_OVR_CMPLT					3
 /*
  * @API supports fir SPI
  */
