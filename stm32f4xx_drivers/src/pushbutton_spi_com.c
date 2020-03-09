@@ -23,41 +23,39 @@ SPI_Handle_t SPI1_Handle;
 void SPI_GPIOCnfig(void)
 {
 
-	GPIO_Handle_t SPI_Pinx;
-	memset(&SPI_Pinx,0,sizeof(SPI_Pinx));
+	GPIO_Handle_t SPIPins;
+	SPIPins.pGPIOx = GPIOB;
+	SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+	SPIPins.GPIO_PinConfig.GPIO_PinAltFunMode = AF5;
+	SPIPins.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP; //Push Pull configuration for SPIx
+	SPIPins.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;// this config. does not matter
+	SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_HIGH; // this config. does not matter
+	GPIOB_PCLK_EN();
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_13;//SCLK
+	GPIO_Init(&SPIPins);
 
-	SPI_Pinx.pGPIOx = GPIOA;
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_HIGH;
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinAltFunMode = AF5;
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_15;//MOSI
+	GPIO_Init(&SPIPins);
 
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_4;
-	GPIO_Init(&SPI_Pinx);
+	//SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_14;//MISO
+	//GPIO_Init(&SPIPins);
 
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_5;
-	GPIO_Init(&SPI_Pinx);
-
-	//SPI_Pinx.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_6;
-	//GPIO_Init(&SPI_Pinx);
-
-	SPI_Pinx.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_7;
-	GPIO_Init(&SPI_Pinx);
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_12;//NSS
+	GPIO_Init(&SPIPins);
 }
 void SPI1_init(void)
 {
 	memset(&SPI1_Handle,0,sizeof(SPI1_Handle));
-	SPI1_Handle.pSPIx = SPI1;
+	SPI1_Handle.pSPIx = SPI2;
 	SPI1_Handle.SPIConfig.SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;
 	SPI1_Handle.SPIConfig.SPI_BusConfig = SPI_CONFIG_FD;
 	SPI1_Handle.SPIConfig.SPI_SclkSpeed = SPI_SCLK_SPEED_DIV8;
 	SPI1_Handle.SPIConfig.SPI_DFF = SPI_DFF_8BIT;
 	SPI1_Handle.SPIConfig.SPI_CPOL = SPI_CPOL_LOW;
 	SPI1_Handle.SPIConfig.SPI_CPHA = SPI_CPHA_LOW;
-	SPI1_Handle.SPIConfig.SPI_SSM = SPI_SSM_SOFTWARE;
+	SPI1_Handle.SPIConfig.SPI_SSM = SPI_SSM_HARDWARE;
 
-	SPI_PClkControl(SPI1,ENABLE); // CLOCK SET
+	SPI_PClkControl(SPI2,ENABLE); // CLOCK SET
 	SPI_Init(&SPI1_Handle); //
 
 }
@@ -71,7 +69,7 @@ void GPIO_PushButton(void)
 	GPIO_PushButton.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_0;
 	GPIO_PushButton.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IT_FT;
 	GPIO_PushButton.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_HIGH;
-	GPIO_PushButton.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+	GPIO_PushButton.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
 
 	GPIO_PClkControl(GPIOA,ENABLE);
 	GPIO_Init(&GPIO_PushButton);
@@ -87,8 +85,8 @@ int main(void)
 	SPI_GPIOCnfig();
 	//SPI initialization
 	SPI1_init();
-	SPI_SSOEConfig(SPI1,ENABLE);//SSM = 0,SSOE = 1 for NSS pin HIGH
-	SPI_PeripheralControl(SPI1,ENABLE);
+	SPI_SSOEConfig(SPI2,ENABLE);//SSM = 0,SSOE = 1 for NSS pin HIGH
+	SPI_PeripheralControl(SPI2,ENABLE);
 
 	while(0);
 	return 0;
@@ -101,7 +99,7 @@ void EXTI0_IRQHandler(void)
 
 	//Action on interrupt
 	char send_data[] = "hello world";
-	SPI_SendData(SPI1,(uint8_t*)send_data,strlen(send_data));
+	SPI_SendData(SPI2,(uint8_t*)send_data,strlen(send_data));
 
 }
 

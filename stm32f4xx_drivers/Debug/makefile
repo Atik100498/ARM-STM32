@@ -34,7 +34,7 @@ all: stm32f4xx_drivers.elf
 stm32f4xx_drivers.elf: $(OBJS) $(USER_OBJS) D:\STM_IDE_PROJECT\stm32f4xx_drivers/LinkerScript.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"D:/STM_IDE_PROJECT/stm32f4xx_drivers/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "stm32f4xx_drivers.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -specs=rdimon.specs -lc -lrdimon -T"D:/STM_IDE_PROJECT/stm32f4xx_drivers/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "stm32f4xx_drivers.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
