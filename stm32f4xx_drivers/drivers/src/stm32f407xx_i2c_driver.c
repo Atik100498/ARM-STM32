@@ -102,7 +102,6 @@ void I2C_Init(I2C_Handle_t *pI2CHandle)
 	tempreg = 0;
 	tempreg = RCC_SystemClock()/1000000U;
 	pI2CHandle->pI2Cx->CR2 |= (tempreg & 0x3F);
-
 	tempreg = 0;
 	tempreg |= pI2CHandle->I2C_Config.I2C_DeviceAddress;
 	tempreg |= (1 << 14);
@@ -241,6 +240,24 @@ void I2C_MasterSendData(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer,uint32_t len
 	//8.generate the stop condition
 	I2C_GenerateStopCondition(pI2CHandle->pI2Cx);
 
+}
+void I2C_MasterDMASendData(I2C_Handle_t *pI2CHandle,uint8_t SlaveAddr)
+{
+	I2C_GenerateStartCondition(pI2CHandle->pI2Cx);
+
+	//2.confirm that start generation is completed by checking the SB flag in the SR1
+	while(!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB)));
+
+	//3. send the address of the slave with r/w bit to w(0) (total 8bit)
+	I2C_ExecuteAddressPhase(pI2CHandle->pI2Cx,SlaveAddr);
+
+	//ENABLE DMA
+	pI2CHandle->pI2Cx->CR2 |= (1<<11);
+	//4. confirm that the address pahse is completed by checking the AADR flag in the SR1
+	while(!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR)));
+
+	//5. clear the ADDR flag according to software sequence
+	I2C_ClearADDRFlag(pI2CHandle->pI2Cx);
 }
 
 void I2C_MasterRecieveData(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer,uint32_t len,uint8_t SlaveAddr)

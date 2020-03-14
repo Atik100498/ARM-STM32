@@ -38,31 +38,48 @@ void DMAPeripheralEnable(DMA_RegDef_t *pDMAx,uint8_t ENOrDi)
 {
 	if(ENOrDi == ENABLE)
 	{
-		pDMAx->S0CR |= (1<<0);
+		pDMAx->S6CR |= (1<<0);
 	}else
 	{
-		pDMAx->S0CR &= ~(1<<0);
+		pDMAx->S6CR &= ~(1<<0);
 	}
 }
 void DMAInit(DMA_Handle_t *pDMAHanlde)
 {
-	if(pDMAHanlde->pDMAConfig.StreamSelect == STREAM0)
+	if(pDMAHanlde->pDMAConfig.StreamSelect == STREAM7)
 	{
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.ChannelSelect << 25);
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.SelectPriority << 16);
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.PeripheralDataSize << 11);
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.MemoryIncrementEnable << 10);
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.PeripheralDataSize << 9);
-		pDMAHanlde->pDMAx->S0CR |= (pDMAHanlde->pDMAConfig.DataFlowDirection << 6);
-		pDMAHanlde->pDMAx->S0M0AR |= (pDMAHanlde->pDMAConfig.SourceAddress << 0);
-		pDMAHanlde->pDMAx->S0PAR |= (pDMAHanlde->pDMAConfig.DestinationAddress << 0);
-		pDMAHanlde->pDMAx->S0NDTR |= (pDMAHanlde->pDMAConfig.NumberOfTransaction << 0);
-		pDMAHanlde->pDMAx->S0M0AR &= ~(1 << 2);
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.ChannelSelect << 25);//1
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.SelectPriority << 16);//11
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.PeripheralDataSize << 11);
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.MemoryIncrementEnable << 10);//1
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.PeripheralIncrementEnable << 9);//0
+		pDMAHanlde->pDMAx->S7CR |= (pDMAHanlde->pDMAConfig.DataFlowDirection << 6);//M2P
+		pDMAHanlde->pDMAx->S7M0AR |= (pDMAHanlde->pDMAConfig.SourceAddress << 0);
+		pDMAHanlde->pDMAx->S7PAR |= (pDMAHanlde->pDMAConfig.DestinationAddress << 0);
+		pDMAHanlde->pDMAx->S7NDTR |= (pDMAHanlde->pDMAConfig.NumberOfTransaction << 0);
+		pDMAHanlde->pDMAx->S7FCR = 0;
 		//Enable direct mode interrupt
 		//1.TCIE - Transfer complete interrupt enable
 		//2. DMEIE - Direct mode interrupt enable
-		pDMAHanlde->pDMAx->S0CR |= 0x12;
+		pDMAHanlde->pDMAx->S7CR |= 0x1E;
 	}
+	if(pDMAHanlde->pDMAConfig.StreamSelect == STREAM6)
+		{
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.ChannelSelect << 25);//1
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.SelectPriority << 16);//11
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.PeripheralDataSize << 11);
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.MemoryIncrementEnable << 10);//1
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.PeripheralIncrementEnable << 9);//0
+			pDMAHanlde->pDMAx->S6CR |= (pDMAHanlde->pDMAConfig.DataFlowDirection << 6);//M2P
+			pDMAHanlde->pDMAx->S6M0AR |= (pDMAHanlde->pDMAConfig.SourceAddress << 0);
+			pDMAHanlde->pDMAx->S6PAR |= (pDMAHanlde->pDMAConfig.DestinationAddress << 0);
+			pDMAHanlde->pDMAx->S6NDTR |= (pDMAHanlde->pDMAConfig.NumberOfTransaction << 0);
+			pDMAHanlde->pDMAx->S6FCR = 0;
+			//Enable direct mode interrupt
+			//1.TCIE - Transfer complete interrupt enable
+			//2. DMEIE - Direct mode interrupt enable
+			pDMAHanlde->pDMAx->S6CR |= (1<<4);//only TCIE transfer complete error
+		}
 }
 
 void DMA_InterruptFlagClear(DMA_RegDef_t *pDMAx)
@@ -70,6 +87,30 @@ void DMA_InterruptFlagClear(DMA_RegDef_t *pDMAx)
 	pDMAx->LIFCR = 0;
 	pDMAx->HIFCR = 0;
 }
+
+void DMAInterruptHandle(DMA_Handle_t *pDMAHandle)
+{
+	uint32_t temp;
+	temp = pDMAHandle->pDMAx->HISR;
+	pDMAHandle->pDMAx->HIFCR = (1<<21);
+//	if(temp & (1<<27))
+//	{
+//		pDMAHandle->pDMAConfig.DMATransferCompeleteFLag = SET;
+//		pDMAHandle->pDMAx->HIFCR |= (1<<27);
+//	}
+//	if(temp & (1<< 24))
+//	{
+//		pDMAHandle->pDMAConfig.DMATransferCompeleteFLag = SET;
+//		pDMAHandle->pDMAx->HIFCR |= (1<<24);
+//	}
+//	if(temp & (1<< 21))
+//	{
+//		pDMAHandle->pDMAConfig.DMATransferCompeleteFLag = SET;
+//		pDMAHandle->pDMAx->HIFCR |= (1<<21);
+//	}
+	(void)temp;
+}
+
 void DMA_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi)
 {
 	/*
@@ -122,3 +163,4 @@ void DMA_IRQPriorityConfig(uint8_t IRQNumber,uint32_t IRQPriority)
 	uint8_t shift_amount = (8 * iprx_section) + (8 + NO_PR_NITS_IMPLEMENTED) ;
 	*(NVIC_PR_BASE_ADDR + (iprx)) |= (IRQPriority<< shift_amount);
 }
+

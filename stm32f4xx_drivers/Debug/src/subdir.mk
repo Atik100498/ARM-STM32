@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/adc_i2c.c 
+../src/DMA_i2c.c 
 
 OBJS += \
-./src/adc_i2c.o 
+./src/DMA_i2c.o 
 
 C_DEPS += \
-./src/adc_i2c.d 
+./src/DMA_i2c.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

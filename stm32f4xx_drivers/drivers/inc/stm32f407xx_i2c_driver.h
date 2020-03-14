@@ -47,6 +47,9 @@ void I2C_DeInit(I2C_RegDef_t *pI2Cx);//PERIPHERAL RESET IN RCC WILL RESET ALL TH
 
 void I2C_MasterSendData(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer,uint32_t len,uint8_t SlaveAddr);
 void I2C_MasterRecieveData(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer,uint32_t len,uint8_t SlaveAddr);
+
+/******DMA send data**************/
+void I2C_MasterDMASendData(I2C_Handle_t *pI2CHandle,uint8_t SlaveAddr);
 /*
  * I2C peripheral control API
  */

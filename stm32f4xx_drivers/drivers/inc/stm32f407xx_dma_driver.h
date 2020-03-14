@@ -25,6 +25,8 @@ typedef struct
 	uint16_t NumberOfTransaction;//SxNDTR
 	uint8_t EnableAllInterrupt;//TCIE = 1,TEIE = 1, DMEIE = 1
 	uint8_t SelectPriority;
+	uint8_t DMATransferCompeleteFLag;
+	uint8_t DMADirectModeErrorFlag;
 }DMA_Config_t;
 
 typedef struct
@@ -44,6 +46,8 @@ void DMA_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi);
 void DMA_IRQPriorityConfig(uint8_t IRQNumber,uint32_t IRQPriority);
 
 void DMA_InterruptFlagClear(DMA_RegDef_t *pDMAx);
+
+void DMAInterruptHandle(DMA_Handle_t *pDMAHandle);
 
 void DMA1_Stream0_IRQHandler(void);
 void DMA1_Stream1_IRQHandler(void);
@@ -65,4 +69,20 @@ void DMA2_Stream7_IRQHandler(void);
 
 
 #define STREAM0			0
+#define STREAM6			6
+#define STREAM7			7
+
+#define PRIORITY_VH		3
+#define PRIORITY_H		2
+#define PRIORITY_M		1
+#define PRIORITY_L		0
+
+#define PSIZE_8BIT		0
+#define PSIZE_16BIT		1
+#define PSIZE_32BIT		2
+
+#define DIR_P2M			0
+#define DIR_M2P			1
+#define DIR_M2M			2
+
 #endif /* INC_STM32F407XX_DMA_DRIVER_H_ */
